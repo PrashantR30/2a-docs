@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-            ref: gh-pages  # Checkout the gh-pages branch to ensure it's updated
+        # with:
+        #     ref: gh-pages  # Checkout the gh-pages branch to ensure it's updated
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
