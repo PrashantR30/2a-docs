@@ -26,6 +26,12 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: pip install \
-              mkdocs-material \
-              mkdocs-mermaid2-plugin
+          mkdocs-material \
+          mkdocs-mermaid2-plugin \
+          mike
+      - run: |
+          # Deploy all versions
+          mike deploy v1.0.0 --update-aliases
+          mike deploy v2.0.0 --update-aliases latest
+      - run: mike set-default latest --push
       - run: mkdocs gh-deploy --force

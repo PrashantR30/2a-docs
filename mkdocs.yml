@@ -2,3 +2,8 @@ site_name: My Docs
 theme:
   name: "material"
   highlightjs: true
+
+plugins:
+  - mike
+extra:
+  version_selector: true
