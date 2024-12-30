@@ -36,7 +36,7 @@ jobs:
           git fetch origin gh-pages
           git merge origin/gh-pages --allow-unrelated-histories
           # Deploy all versions
-          mike deploy v1.0.0 --update-aliases
-          mike deploy v2.0.0 --update-aliases latest
+          mike deploy v1.0.0 --update-aliases --ignore-version
+          mike deploy v2.0.0 --update-aliases latest --ignore-version
       - run: mike set-default latest --push
       - run: mkdocs gh-deploy --force
