@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        # with:
-        #     ref: gh-pages  # Checkout the gh-pages branch to ensure it's updated
+        with:
+            ref: gh-pages  # Checkout the gh-pages branch to ensure it's updated
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
@@ -36,7 +36,7 @@ jobs:
           git fetch origin gh-pages
           git merge origin/gh-pages --allow-unrelated-histories
           # Deploy all versions
-          mike deploy v1.0.0 --update-aliases --ignore-version
-          mike deploy v2.0.0 --update-aliases latest --ignore-version
+          mike deploy v1.0.0 --update-aliases
+          mike deploy v2.0.0 --update-aliases latest
       - run: mike set-default latest --push
       - run: mkdocs gh-deploy --force
