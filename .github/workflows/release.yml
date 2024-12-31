@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    name: Release & Push to GAR
+    name: Release
     runs-on: ubuntu-latest
 
     steps:
