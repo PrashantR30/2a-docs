@@ -1,9 +1,23 @@
-site_name: My Docs
+site_name: "My Docs"
 theme:
-  name: "material"
-  highlightjs: true
+  name: material
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - toc.follow
+  version:
+    provider: mike
+    default: latest
+
+extra:
+  version:
+    provider: mike
+    default: latest
 
 plugins:
+  - search
+  - mermaid2
   - mike
-extra:
-  version_selector: true
