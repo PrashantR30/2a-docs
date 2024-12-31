@@ -1,32 +1,26 @@
-name: Release Pipeline
+name: Release
 
 on:
   push:
-    branches:
-    - dev
-    - main
-    - cicd
+    tags:
+      - v* # Push events to matching v*, i.e. v1.0, v20.15.10
 
-    
 jobs:
   release:
+    name: Release & Push to GAR
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Get tag name
-        id: get_tag
-        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          name: Release ${{ steps.get_tag.outputs.TAG }}
-          tag_name: ${{ steps.get_tag.outputs.TAG }}
-          draft: false
-          prerelease: false
+    - name: Release
+      uses: huggingface/semver-release-action@latest
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    
+    - name: Set LATEST_TAG environment variable
+      run: |
+        LATEST_TAG=$(git tag --list --sort=committerdate | tail -1)
+        echo "LATEST_TAG=${LATEST_TAG}"
+      shell: bash
