@@ -11,12 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-            ref: gh-pages  # Checkout the gh-pages branch to ensure it's updated
       - name: Configure Git Credentials
         run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
@@ -30,13 +28,4 @@ jobs:
       - run: pip install \
               mkdocs-material \
               mkdocs-mermaid2-plugin \
-              mike
-      - run: |
-          # Fetch the latest changes from gh-pages to avoid rejection
-          git fetch origin gh-pages
-          git merge origin/gh-pages --allow-unrelated-histories
-          # Deploy all versions
-          mike deploy v1.0.0 --update-aliases
-          mike deploy v2.0.0 --update-aliases latest
-      - run: mike set-default latest --push
       - run: mkdocs gh-deploy --force
