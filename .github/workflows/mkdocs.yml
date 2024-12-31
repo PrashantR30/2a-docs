@@ -31,18 +31,19 @@ jobs:
       - run: pip install \ mkdocs-material \ mkdocs-mermaid2-plugin \ mike
       - name: Deploy docs
         run: |
-          # Get last 3 tags starting with v
-          VERSIONS=$(git tag -l 'v*' | sort -V | tail -3)
-
-          # Convert to array
-          IFS=$'\n' read -d '' -r -a VERSION_ARRAY <<< "$VERSIONS"
-
-          # Deploy first two versions
-          for VERSION in "${VERSION_ARRAY[@]:0:2}"; do
-            mike deploy --push "${VERSION#v}"
-          done
-
-          # Deploy latest version with latest alias
-          LATEST_VERSION="${VERSION_ARRAY[-1]}"
-          mike deploy --push --update-aliases "${LATEST_VERSION#v}" latest
-          mike set-default --push latest
+          # Create array of last 3 versions
+          readarray -t VERSIONS < <(git tag -l 'v*' | sort -V | tail -3)
+          
+          # Check if we have versions
+          if [ ${#VERSIONS[@]} -gt 0 ]; then
+            # Deploy all except latest
+            for ((i=0; i<${#VERSIONS[@]}-1; i++)); do
+              VERSION=${VERSIONS[i]}
+              mike deploy --push "${VERSION#v}"
+            done
+            
+            # Deploy latest version
+            LATEST=${VERSIONS[-1]}
+            mike deploy --push --update-aliases "${LATEST#v}" latest
+            mike set-default --push latest
+          fi
