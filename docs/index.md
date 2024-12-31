@@ -1,1 +1,1 @@
-## Document version 6.0
+## Document version 7.0
