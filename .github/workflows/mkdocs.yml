@@ -1,9 +1,8 @@
-name: Generating docs 
+name: Build MkDocs
+
 on:
-  push:
-    branches:
-      - main
-      - dev
+  release:
+    types: [published]
 
 permissions:
   contents: write
