@@ -1,46 +1,38 @@
-name: Build MkDocs
-'on':
+name: Deploy Documentation
+
+on:
   release:
-    types:
-      - published
-permissions:
-  contents: write
+    types: [published]
+
 jobs:
   deploy:
+    if: startsWith(github.event.release.tag_name, 'v')
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: '${{ github.event.release.tag_name }}'
-      - name: Configure Git Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - uses: actions/cache@v4
-        with:
-          key: 'mkdocs-material-${{ env.cache_id }}'
-          path: .cache
-          restore-keys: |
-            mkdocs-material-
-      - run: pip install mkdocs-material mkdocs-mermaid2-plugin mike
-      - name: Deploy docs
-        run: |
-          # Get last 3 tags starting with v
-          VERSIONS=$(git tag -l 'v*' | sort -V | tail -3)
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-          # Convert to array
-          IFS=$'\n' read -r -a VERSION_ARRAY <<< "$VERSIONS"
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
 
-          # Deploy first two versions
-          for VERSION in "${VERSION_ARRAY[@]:0:2}"; do
-            mike deploy --push "${VERSION#v}"
-          done
+    - name: Install mkdocs-material and mike
+      run: |
+        python -m pip install --upgrade pip
+        pip install mkdocs-material mike
 
-          # Deploy latest version with latest alias
-          LATEST_VERSION="${VERSION_ARRAY[-1]}"
-          mike deploy --push --update-aliases "${LATEST_VERSION#v}" latest
-          mike set-default --push latest
+    - name: Get last 3 releases
+      id: get-releases
+      run: |
+        releases=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[].tag_name' | grep '^v' | sort -V | tail -n 3)
+        echo "::set-output name=releases::$releases"
+
+    - name: Deploy documentation
+      run: |
+        for release in ${{ steps.get-releases.outputs.releases }}
+        do
+          mike deploy $release --push
+        done
+        mike set-default latest --push
