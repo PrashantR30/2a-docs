@@ -1,12 +1,13 @@
 name: Deploy Documentation
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
-    if: startsWith(github.event.release.tag_name, 'v')
+
     runs-on: ubuntu-latest
 
     steps:
