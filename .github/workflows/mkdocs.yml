@@ -1,47 +1,31 @@
-name: Publish docs
-on:
-  push:
-    branches:
-      - main
-permissions:
-  contents: write
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: '${{ github.event.release.tag_name }}'
-      - name: Configure Git Credentials
-        run: >
-          git config user.name github-actions[bot]
-          git config user.email
-          41898282+github-actions[bot]@users.noreply.github.com
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - uses: actions/cache@v4
-        with:
-          key: 'mkdocs-material-${{ env.cache_id }}'
-          path: .cache
-          restore-keys: |
-            mkdocs-material-
-      - run: pip install \ mkdocs-material \ mkdocs-mermaid2-plugin \ mike
-      - name: Deploy docs
-        run: |
-          # Get last 3 tags starting with v
-          VERSIONS=$(git tag -l 'v*' | sort -V | tail -3)
-
-          # Convert to array
-          IFS=$'\n' read -d '' -r -a VERSION_ARRAY <<< "$VERSIONS"
-
-          # Deploy first two versions
-          for VERSION in "${VERSION_ARRAY[@]:0:2}"; do
-            mike deploy --push "${VERSION#v}"
-          done
-
-          # Deploy latest version with latest alias
-          LATEST_VERSION="${VERSION_ARRAY[-1]}"
-          mike deploy --push --update-aliases "${LATEST_VERSION#v}" latest
-          mike set-default --push latest
+# name: docs 
+# on:
+#   push:
+#     branches:
+#       - main
+#       - dev
+# permissions:
+#   contents: write
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Configure Git Credentials
+#         run: |
+#           git config --local user.email "action@github.com"
+#           git config --local user.name "GitHub Action"
+#       - uses: actions/setup-python@v5
+#         with:
+#           python-version: 3.x
+#       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV 
+#       - uses: actions/cache@v4
+#         with:
+#           key: mkdocs-material-${{ env.cache_id }}
+#           path: .cache
+#           restore-keys: |
+#             mkdocs-material-
+#       - run: pip install \
+#               mkdocs-material \
+#               mkdocs-mermaid2-plugin \
+#       - run: mkdocs gh-deploy --force
