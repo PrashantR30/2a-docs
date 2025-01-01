@@ -29,4 +29,16 @@ jobs:
               mkdocs-material \
               mkdocs-mermaid2-plugin \
               mike
-      - run: mkdocs gh-deploy --force
+      - name: Get last 3 releases
+        id: get-releases
+        run: |
+          releases=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases | jq -r '.[].tag_name' | grep '^v' | sort -V | tail -n 3)
+          echo "::set-output name=releases::$releases"
+
+      - name: Deploy documentation
+        run: |
+          for release in ${{ steps.get-releases.outputs.releases }}
+          do
+            mike deploy $release --push
+          done
+          mike set-default latest --push
