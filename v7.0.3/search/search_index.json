@@ -1,0 +1,1 @@
+{"config":{"lang":["en"],"separator":"[\\s\\-]+","pipeline":["stopWordFilter"]},"docs":[{"location":"","title":"Home","text":""},{"location":"#document-version-81","title":"Document version 8.1","text":""},{"location":"page2/","title":"Page2","text":"<p>Page 8.1 -Document version 8.1</p>"}]}
